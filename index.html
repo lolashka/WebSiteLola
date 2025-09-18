@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>External Web Widget</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 16px; }
+    .card { border: 1px solid #ddd; padding: 12px; border-radius: 6px; max-width:600px; }
+    .label { color: #666; font-size: 12px; }
+    .value { font-weight: 600; font-size: 18px; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <h3>Embedded Widget</h3>
+  <div id="status">Waiting for Contact parameters...</div>
+  <div id="contact" class="card" style="display:none;">
+    <div><span class="label">Name</span><div id="cName" class="value"></div></div>
+    <div><span class="label">Email</span><div id="cEmail" class="value"></div></div>
+    <div><span class="label">Phone</span><div id="cPhone" class="value"></div></div>
+    <div><span class="label">Id</span><div id="cId" class="value"></div></div>
+  </div>
+
+  <script>
+    // Whitelist origin(s) that are allowed to send contact data
+    const allowedOrigins = [
+      'https://your-salesforce-domain.my.salesforce.com',
+      'https://your-my-domain.my.salesforce.com'
+    ];
+
+    window.addEventListener('message', event => {
+      // SECURITY: Always check origin
+      // For testing you can console.log(event.origin)
+      if (!allowedOrigins.includes(event.origin)) {
+        console.warn('Ignored message from origin', event.origin);
+        return;
+      }
+
+      const data = event.data || {};
+      if (data.type === 'CONTACT_PARAMS' && data.payload) {
+        const p = data.payload;
+        document.getElementById('status').textContent = 'Contact params received';
+        document.getElementById('contact').style.display = 'block';
+        document.getElementById('cName').textContent = p.name || '(none)';
+        document.getElementById('cEmail').textContent = p.email || '(none)';
+        document.getElementById('cPhone').textContent = p.phone || '(none)';
+        document.getElementById('cId').textContent = p.id || '(none)';
+        // If desired, you can now call backend APIs using p.id, etc.
+      }
+    }, false);
+  </script>
+</body>
+</html>
+
+
+     
+         
+           
+            
+    
+        
+
+
